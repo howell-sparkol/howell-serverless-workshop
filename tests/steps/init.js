@@ -18,6 +18,10 @@ const init = async () => {
   process.env.cognito_server_client_id = "27d0o3kli1fs92a81q6lu6podp"
   
   const { credentials } = await promisify(awscred.load)()
+
+  if (credentials.sessionToken) {
+    process.env.AWS_SESSION_TOKEN = credentials.sessionToken
+  }
   
   process.env.AWS_ACCESS_KEY_ID     = credentials.accessKeyId
   process.env.AWS_SECRET_ACCESS_KEY = credentials.secretAccessKey
