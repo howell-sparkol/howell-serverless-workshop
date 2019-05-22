@@ -34,8 +34,8 @@ functions:
           - - "https://"
             - Ref: ApiGatewayRestApi
             - .execute-api.${opt:region}.amazonaws.com/${opt:stage}/restaurants
-      cognito_user_pool_id: us-east-1_bSje4Z3aJ
-      cognito_client_id: 5ikc1pj9cmsnhvldo2fu3i8tmt
+      cognito_user_pool_id: ${ssm:/${self:service}/${opt:stage}/cognito_user_pool_id}
+      cognito_client_id: ${ssm:/${self:service}/${opt:stage}/cognito_web_client_id}
   get-restaurants:
     handler: functions/get-restaurants.handler
     events:
@@ -44,7 +44,7 @@ functions:
           method: get
           authorizer: aws_iam
     environment:
-      restaurants_table: restaurants-howell
+      restaurants_table: ${ssm:/${self:service}/${opt:stage}/table_name}
   search-restaurants:
     handler: functions/search-restaurants.handler
     events:
@@ -54,14 +54,14 @@ functions:
           authorizer:
             arn: arn:aws:cognito-idp:us-east-1:965582243733:userpool/us-east-1_bSje4Z3aJ
     environment:
-      restaurants_table: restaurants-howell
+      restaurants_table: ${ssm:/${self:service}/${opt:stage}/table_name}
 
 resources:
   Resources:
     restaurantsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: restaurants-howell
+        TableName: ${ssm:/${self:service}/${opt:stage}/table_name}
         AttributeDefinitions:
           - AttributeName: name
             AttributeType: S
